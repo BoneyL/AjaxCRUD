@@ -3,7 +3,7 @@ package cafe.jjdev.ajaxcrud.member.vo;
 public class Member {
 	private String id;
 	private String pw;
-	private String name;
+	private String name; // 아
 	private int age;
 	private String gender;
 	public String getId() {
