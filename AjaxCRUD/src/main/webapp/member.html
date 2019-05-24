@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+	
+    // 삭제
+    $('#btnRemove').on('click',function(){
+		let ck = new Array();
+		$('.ck:checked').each(function(index, item){
+			ck.push($(item).val());			
+		});
+		console.log('#btnRemove click')
+		$.ajax({
+			url:'/removeMember'
+			, type : 'POST'
+			, data : {'ck':ck}
+			, success:function() {
+				 $('#btnList').trigger('click');
+			}
+		});
+    });
+ 
+    // 추가
+    $('#btnAdd').on('click',function(){
+    	if($('#id').val().replace)
+    	console.log('#btnModify click')
+    	let id = $('#id').val();
+    	let pw = $('#pw').val();
+    	let name = $('#name').val();
+    	let age = $('#age').val();
+    	let gender = $('#gender').val();
+ 
+        $.ajax({
+            url:'/addMember',
+            type:'POST',
+            data:{'id':id,'pw':pw,'name':name,'age':age,'gender':gender},
+        	success:function(){
+                $('#btnList').trigger('click');
+                $('#id').val('');
+                $('#pw').val('');
+                $('#name').val('');
+                $('#age').val('');
+                $('#gender').val('');
+            }
+        });
+    });
+    // 수정
+    $('#btnModify').on('click',function(){
+    	console.log('#btnModify click')
+    	let id = $('#id').val();
+    	let pw = $('#pw').val();
+    	let name = $('#name').val();
+    	let age = $('#age').val();
+    	let gender = $('#gender').val();
+ 
+        $.ajax({
+            url:'/modifyMember',
+            type:'POST',
+            data:{'id':id,'pw':pw,'name':name,'age':age,'gender':gender},
+            success:function(){
+                $('#btnList').trigger('click');
+                $('#pw').val('');
+                $('#name').val('');
+                $('#age').val('');
+                $('#gender').val('');
+            }
+        });
+    });
+    // 목록
+    $('#btnList').on('click',function(){
+    	console.log('#btnList click')
+		$.ajax({
+			url:'/getMembers'
+			, type : 'GET'
+			, success:function(data){
+		      	$('#list').empty();
+		        $(data).each(function(index,item){
+		        	$('#list').append('<tr>');
+		            $('#list').append('<td><input type="checkbox" class="ck" value="'+item.id+'"></td>');
+		            $('#list').append('<td>'+item.id+'</td>');
+		            $('#list').append('<td>'+item.pw+'</td>');
+		            $('#list').append('<td>'+item.name+'</td>');
+		            $('#list').append('<td>'+item.age+'</td>');
+		            $('#list').append('<td>'+item.gender+'</td>');
+		            $('#list').append('</tr>');
+		    	});
+			}
+		});
+	});
+    $('#btnList').trigger('click');
+});
+
+</script>
+</head>
+<body>
+	<table border="1">
+		<thead>
+			<tr>
+				<th>id</th>
+				<th>pw</th>
+				<th>name</th>
+				<th>age</th>
+				<th>gender</th>
+				<th>추가</th>
+				<th>수정</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td><input type="text" id="id"></td>
+				<td><input type="password" id="pw"></td>
+				<td><input type="text" id="name"></td>
+				<td><input type="text" id="age"></td>
+				<td><select id="gender">
+						<option value="m">남</option>
+						<option value="f">여</option>
+				</select></td>
+				<td><button id="btnAdd" type="button">add</button></td>
+				<td><button id="btnModify" type="button">modify</button></td>
+			</tr>
+		</tbody>
+	</table>
+	<button id="btnList" type="button">회원리스트</button>
+	<button id="btnRemove" type="button">remove</button>
+	<table border="1">
+		<thead>
+			<tr>
+				<th></th>
+				<th>id</th>
+				<th>pw</th>
+				<th>name</th>
+				<th>age</th>
+				<th>gender</th>
+			</tr>
+		</thead>
+		<tbody id="list">
+		</tbody>
+	</table>
+	
+</body>
+</html>
