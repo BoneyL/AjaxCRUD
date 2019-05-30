@@ -6,110 +6,212 @@
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script>
-$(document).ready(function(){
-	
-    // 삭제
-    $('#btnRemove').on('click',function(){
-		let ck = new Array();
-		$('.ck:checked').each(function(index, item){
-			ck.push($(item).val());			
-		});
-		console.log('#btnRemove click')
-		$.ajax({
-			url:'/removeMember'
-			, type : 'POST'
-			, data : {'ck':ck}
-			, success:function() {
-				 $('#btnList').trigger('click');
+	$(document).ready(function() {
+		// 유효성 검사 함수
+		function validationCheck() {
+			var getCheck= RegExp(/^[a-zA-Z0-9]{4,12}$/);
+			var getCheckName= RegExp(/^[가-힣]{3,10}$/); // 이름은 3자 이상 10자 이하만 허용
+			var getCheckAge = RegExp(/^[0-9]{1,2}$/); // 나이는 1개나 2개 자리 숫자만 허용
+			
+			//아이디 공백 확인
+			if($("#id").val() == ""){
+				alert("아이디 입력바람");
+				$("#id").focus();
+				return false;
 			}
-		});
-    });
- 
-    // 추가
-    $('#btnAdd').on('click',function(){
-    	if($('#id').val().replace)
-    	console.log('#btnModify click')
-    	let id = $('#id').val();
-    	let pw = $('#pw').val();
-    	let name = $('#name').val();
-    	let age = $('#age').val();
-    	let gender = $('#gender').val();
- 
-        $.ajax({
-            url:'/addMember',
-            type:'POST',
-            data:{'id':id,'pw':pw,'name':name,'age':age,'gender':gender},
-        	success:function(){
-                $('#btnList').trigger('click');
-                $('#id').val('');
-                $('#pw').val('');
-                $('#name').val('');
-                $('#age').val('');
-                $('#gender').val('');
-            }
-        });
-    });
-    // 수정
-    $('#btnModify').on('click',function(){
-    	console.log('#btnModify click')
-    	let id = $('#id').val();
-    	let pw = $('#pw').val();
-    	let name = $('#name').val();
-    	let age = $('#age').val();
-    	let gender = $('#gender').val();
- 
-        $.ajax({
-            url:'/modifyMember',
-            type:'POST',
-            data:{'id':id,'pw':pw,'name':name,'age':age,'gender':gender},
-            success:function(){
-                $('#btnList').trigger('click');
-                $('#pw').val('');
-                $('#name').val('');
-                $('#age').val('');
-                $('#gender').val('');
-            }
-        });
-    });
-    // 목록
-    $('#btnList').on('click',function(){
-    	console.log('#btnList click')
-		$.ajax({
-			url:'/getMembers'
-			, type : 'GET'
-			, success:function(data){
-		      	$('#list').empty();
-		        $(data).each(function(index,item){
-		        	$('#list').append('<tr>');
-		            $('#list').append('<td><input type="checkbox" class="ck" value="'+item.id+'"></td>');
-		            $('#list').append('<td>'+item.id+'</td>');
-		            $('#list').append('<td>'+item.pw+'</td>');
-		            $('#list').append('<td>'+item.name+'</td>');
-		            $('#list').append('<td>'+item.age+'</td>');
-		            $('#list').append('<td>'+item.gender+'</td>');
-		            $('#list').append('</tr>');
-		    	});
+			
+			//아이디 유효성 검사
+			if(!getCheck.test($("#id").val())){
+				alert("아이디확인");
+				$("#id").val("");
+				$("#id").focus();
+				return false;
 			}
+			
+			//비밀번호 유효성 검사
+			if(!getCheck.test($("#pw").val())) {
+				alert("pw확인");
+				$("#pw").val("");
+				$("#pw").focus();
+				return false;
+			}
+			
+			//아이디랑 비밀번호랑 같은지
+			if ($("#id").val()==($("#pw").val())) {
+				alert("id와 pw 일치합니다 변경");
+				$("#pw").val("");
+				$("#pw").focus();
+				return false;
+			}
+			
+			//이름 유효성 검사
+			if (!getCheckName.test($("#name").val())) {
+				alert("Please Check your Name(Only )");
+				$("#name").val("");
+				$("#name").focus();
+				return false;
+			}
+			
+			//나이 유효성 검사		
+			if(!getCheckAge.test($("#age").val())){
+				alert("Please check your age")
+				$("#age").val("");
+				$("#age").focus();
+				return false;
+			}
+		}
+		//삭제
+		$('#btnRemove').on('click', function() {
+			let ck = new Array();
+			$('.ck:checked').each(function(index, item) {
+				ck.push($(item).val());
+			});
+			console.log('#btnRemove click')
+			$.ajax({
+				url : '/removeMember',
+				type : 'POST',
+				data : {'ck' : ck},
+				success : function(data) {
+					$('#btnList').trigger('click');
+				}
+			});
 		});
-	});
-    $('#btnList').trigger('click');
-});
 
+		// 추가
+		$('#btnAdd').on('click', function() {
+			if ($('#id').val().replace)
+				console.log('#btnModify click')
+			let id = $('#id').val();
+			let pw = $('#pw').val();
+			let name = $('#name').val();
+			let age = $('#age').val();
+			let gender = $('#gender').val();
+
+			$.ajax({
+				url : '/addMember',
+				type : 'POST',
+				data : {'id' : id,'pw' : pw,'name' : name,'age' : age,'gender' : gender},
+				success : function(data) {
+					$('#btnList').trigger('click');
+					$('#id').val('');
+					$('#pw').val('');
+					$('#name').val('');
+					$('#age').val('');
+					$('#gender').val('');
+				}
+			});
+		});
+		// 수정
+		$('#btnModify').on('click', function() {
+			console.log('#btnModify click')
+			let id = $('#id').val();
+			let pw = $('#pw').val();
+			let name = $('#name').val();
+			let age = $('#age').val();
+			let gender = $('#gender').val();
+
+			$.ajax({
+				url : '/modifyMember',
+				type : 'POST',
+				data : {'id' : id,'pw' : pw,'name' : name,'age' : age,'gender' : gender},
+				success : function(data) {
+					$('#btnList').trigger('click');
+					$('#pw').val('');
+					$('#name').val('');
+					$('#age').val('');
+					$('#gender').val('');
+				}
+			});
+		});
+
+		// 목록
+		let lastPage;
+		let endPage;
+		let startPage;
+		let currentPage;
+		$('#btnList').click(function() {
+				console.log('#btnList click')
+				$.ajax({
+					url : '/getMembers',
+					type : 'get',
+					data : {'currentPage' : currentPage},
+					success : function(data) {
+						$('#list').empty();		
+						$('#btnPrevious').hide();
+						$('#btnNext').hide();
+						for(let i = 1; i<11; i++){
+							let btnPage = '#btnPage'+i
+							$(btnPage).hide();
+						}
+						
+						$(data.list).each(function(index, item) {
+								$('#list').append('<tr>');
+								$('#list').append('<td><input type="checkbox" class="ck" value="'+item.id+'"></td>');
+								$('#list').append('<td>'+ item.id+ '</td>');
+								$('#list').append('<td>'+ item.pw+ '</td>');
+								$('#list').append('<td>'+ item.name + '</td>');
+								$('#list').append('<td>'+ item.age + '</td>');
+								$('#list').append('<td>'+ item.gender+ '</td>');
+								$('#list').append('</tr>');
+						});
+						
+						currentPage = data.currentPage;
+						currentPageBlock = data.currentPageBlock;
+						lastPageBlock = data.lastPageBlock;
+						endPage = data.endPage;
+						startPage = data.startPage;
+						console.log('currentPageBlock ---- ' + currentPageBlock);
+						console.log('currentPage ---- ' + currentPage);
+						console.log('lastPageBlock ---- ' + lastPageBlock);
+						console.log('endPage ---- ' + endPage);
+						console.log('startPage ---- ' + startPage);
+						
+						
+
+						if(currentPageBlock > 1){
+							$('#btnPrevious').show();
+						}if(currentPageBlock < lastPageBlock){
+							$('#btnNext').show();	
+						}
+						
+						
+
+						
+						for (let i = startPage; i < endPage+1; i++) {
+							let n = i%10;
+							if(n == 0){
+								n= 10;
+							}
+							let btnPage = '#btnPage'+n;
+							$(btnPage).show();
+							$(btnPage).text(i);
+						}
+					}
+				});
+			});
+		$('#btnList').trigger('click');
+		
+		$('#btnPrevious').on('click',function() {
+ 			console.log('#btnPrevious');
+ 			currentPage = (currentPageBlock-1)*10-1;
+ 			$('#btnList').trigger('click');
+ 		});
+		$('.btnPage').on('click',function() {
+ 			console.log('이동할 페이지'+$(this).text());
+			currentPage = parseInt($(this).text());
+			$('#btnList').trigger('click');
+ 		});
+		$('#btnNext').on('click',function() {
+ 			console.log('#btnNext');
+ 			currentPage = (currentPageBlock)*10+1;
+ 			$('#btnList').trigger('click');
+ 		});
+
+	});
 </script>
 </head>
 <body>
-<<<<<<< HEAD
-
-	local.....ddd
-	
-=======
-		ddkdkdk....
->>>>>>> refs/remotes/AjaxCRUD/master
 	<table border="1">
-<<<<<<< HEAD
-=======
-	
->>>>>>> refs/remotes/AjaxCRUD/master
 		<thead>
 			<tr>
 				<th>id</th>
@@ -152,6 +254,20 @@ $(document).ready(function(){
 		<tbody id="list">
 		</tbody>
 	</table>
-	
+	<div class="page">
+		<button type="button" id="btnPrevious">이전</button>
+		
+		<button type="button" hidden="hidden" id="btnPage1" class="btnPage"></button>
+		<button type="button" hidden="hidden" id="btnPage2" class="btnPage"></button>
+		<button type="button" hidden="hidden" id="btnPage3" class="btnPage"></button>
+		<button type="button" hidden="hidden" id="btnPage4" class="btnPage"></button>
+		<button type="button" hidden="hidden" id="btnPage5" class="btnPage"></button>
+		<button type="button" hidden="hidden" id="btnPage6" class="btnPage"></button>
+		<button type="button" hidden="hidden" id="btnPage7" class="btnPage"></button>
+		<button type="button" hidden="hidden" id="btnPage8" class="btnPage"></button>
+		<button type="button" hidden="hidden" id="btnPage9" class="btnPage"></button>
+		<button type="button" hidden="hidden" id="btnPage10" class="btnPage"></button>
+		<button type="button" id="btnNext">다음</button>
+	</div>	
 </body>
 </html>

@@ -8,7 +8,8 @@ import cafe.jjdev.ajaxcrud.member.vo.Member;
 
 @Mapper
 public interface MemberMapper {
-	public List<Member> selectMemberList();
+	public int selectMemberCount();
+	public List<Member> selectMemberList(int StartRow, int rowPerPage);
 	public int insertMember(Member member);
 	public int deleteMember(Member member);
 	public int updateMember(Member member);
